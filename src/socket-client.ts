@@ -3,6 +3,8 @@ import { NAMESPACE_ROOT, SOCKET_SERVER_SIDE_URL } from './dictionary';
 
 // ..............................
 
+let socket: Socket;
+
 export const connetToServer = (token: string) => {
   const manager = new Manager(SOCKET_SERVER_SIDE_URL, {
     extraHeaders: {
@@ -11,14 +13,15 @@ export const connetToServer = (token: string) => {
     },
   });
 
-  const socket = manager.socket(NAMESPACE_ROOT); // Conexion a un NameSpace (nsp)
-
+  socket?.removeAllListeners();
+  socket = manager.socket(NAMESPACE_ROOT); // Conexion a un NameSpace (nsp)
   // console.log({ socket });
 
-  addListeners(socket);
+
+  addListeners();
 };
 
-const addListeners = (socket: Socket) => {
+const addListeners = () => {
   const serverStatusLabel = document.querySelector<HTMLSpanElement>('#server-status')!; // El "!" indica que estamos indicando que siempre va a existir
 
   const clientsUl = document.querySelector<HTMLUListElement>('#clients-ul')!; // El "!" indica que estamos indicando que siempre va a existir
@@ -26,22 +29,22 @@ const addListeners = (socket: Socket) => {
   const messageInput = document.querySelector<HTMLInputElement>('#message-input')!;
   const messageUl = document.querySelector<HTMLUListElement>('#messages-ul')!; // El "!" indica que estamos indicando que siempre va a existir
 
-  const btnConnect = document.querySelector<HTMLButtonElement>('#btn-connect')!;
+  // const btnConnect = document.querySelector<HTMLButtonElement>('#btn-connect')!;
 
   // Escuchar el evento "connect"
   socket.on('connect', () => {
     // console.log('CONNECTED')
-    serverStatusLabel.innerHTML = 'Online';
+    serverStatusLabel.innerHTML = 'C0NNECTED';
     serverStatusLabel.style.color = '#2ECC71';
-    btnConnect.disabled = true;
+    // btnConnect.disabled = true;
   });
 
   // Escuchar el evento "disconnect"
   socket.on('disconnect', () => {
     // console.log('DISCONNECTED')
-    serverStatusLabel.innerHTML = 'Offline';
+    serverStatusLabel.innerHTML = 'DISCONNECTED';
     serverStatusLabel.style.color = '#E74C3C';
-    btnConnect.disabled = false;
+    // btnConnect.disabled = false;
   });
 
   // Escuchar cuando un cliente se conecta
